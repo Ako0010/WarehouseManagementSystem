@@ -64,9 +64,20 @@ public class AuthService : IAuthService
             UpdatedAt = null
         };
 
+
+
         var result = await _userManager.CreateAsync(user, registerRequest.Password);
         if (!result.Succeeded)
             throw new InvalidOperationException(string.Join(", ", result.Errors.Select(e => e.Description)));
+
+        if (!result.Succeeded)
+        {
+            foreach (var error in result.Errors)
+            {
+                Console.WriteLine(error.Description);
+            }
+            throw new InvalidOperationException("User creation failed.");
+        }
 
         await _userManager.AddToRoleAsync(user, "User");
 

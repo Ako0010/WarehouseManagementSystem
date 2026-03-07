@@ -12,8 +12,8 @@ using WarehouseManagementSystem.Data;
 namespace WarehouseManagementSystem.Migrations
 {
     [DbContext(typeof(WarehouseManagementDBContext))]
-    [Migration("20260307145855_InitalCreate")]
-    partial class InitalCreate
+    [Migration("20260307155046_InitalCreate1")]
+    partial class InitalCreate1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -302,7 +302,6 @@ namespace WarehouseManagementSystem.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
@@ -335,15 +334,10 @@ namespace WarehouseManagementSystem.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -355,7 +349,6 @@ namespace WarehouseManagementSystem.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("UserName")
-                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 

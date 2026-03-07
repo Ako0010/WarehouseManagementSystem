@@ -6,7 +6,7 @@ namespace WarehouseManagementSystem.Extensions;
 public static class PipelineExtensions
 {
 
-    public static WebApplication UseWarehouseManagementPiplene(
+    public static WebApplication UseWarehouseManagementPipelene(
         this WebApplication app
         )
     {

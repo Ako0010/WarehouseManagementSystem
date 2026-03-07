@@ -201,7 +201,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddFluentValidationAutoValidation();
         services.AddFluentValidationClientsideAdapters();
-        //services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
+        services.AddValidatorsFromAssemblyContaining<Program>();
         return services;
     }
 

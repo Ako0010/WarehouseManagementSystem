@@ -12,7 +12,7 @@ builder.Services.AddSwagger()
 
 var app = builder.Build();
 
-app.UseWarehouseManagementPiplene();
+app.UseWarehouseManagementPipelene();
 
 await app.EnsureRolesSeededAsync();
 
