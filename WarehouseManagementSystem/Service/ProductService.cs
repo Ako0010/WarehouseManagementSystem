@@ -1,0 +1,101 @@
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using WarehouseManagementSystem.Data;
+using WarehouseManagementSystem.DTOs;
+using WarehouseManagementSystem.Model;
+using WarehouseManagementSystem.Service.Interface;
+
+namespace WarehouseManagementSystem.Service;
+
+public class ProductService : IProductService
+{
+    private readonly WarehouseManagementDBContext _context;
+    private readonly IMapper _mapper;
+
+    public ProductService(WarehouseManagementDBContext context,IMapper mapper)
+    {
+        _context = context;
+        _mapper = mapper;
+
+    }
+
+    public async Task<ProductDto> AddProductAsync(ProductCreateDto productCreateDto)
+    {
+        var product = _mapper.Map<Product>(productCreateDto);
+
+        _context.Products.Add(product);
+
+        await _context.SaveChangesAsync();
+
+        return _mapper.Map<ProductDto>(product);
+    }
+
+    public async Task<bool> DeleteProductAsync(int id)
+    {
+        var product = await _context.Products.FindAsync(id);
+
+        if (product is null)
+            return false;
+
+        _context.Products.Remove(product);
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
+
+    public async Task<List<ProductDto>> GetAllProductsAsync()
+    {
+        var products = await _context.Products
+                             .AsNoTracking()
+                             .ToListAsync();
+
+        return _mapper.Map<List<ProductDto>>(products);
+    }
+
+    public async Task<ProductDto> GetProductByIdAsync(int id)
+    {
+        var product = await _context.Products.FindAsync(id);
+
+        if (product is null)
+            return null;
+
+        return _mapper.Map<ProductDto>(product);
+    }
+
+    public async Task<bool> ReduceStockAsync(int productId, int quantity)
+    {
+        var product = await _context.Products.FindAsync(productId);
+
+        if (product is null)
+            return false;
+
+        if (product.Quantity < quantity)
+            return false;
+
+        product.Quantity -= quantity;
+
+        if (product.Quantity <= 0)
+        {
+            product.Status = ProductStatus.OutOfStock;
+        }
+
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
+
+    public async Task<ProductDto> UpdateProductAsync(int productId, ProductUpdateDto productUpdateDto)
+    {
+        var product = await _context.Products.FindAsync(productId,productUpdateDto);
+
+        if (product is null)
+            return null;
+
+        _mapper.Map(productUpdateDto,product);
+
+        await _context.SaveChangesAsync();
+
+        return _mapper.Map<ProductDto>(product);
+    }
+}

@@ -6,85 +6,84 @@ using WarehouseManagementSystem.Common;
 using WarehouseManagementSystem.DTOs;
 using WarehouseManagementSystem.Service.Interface;
 
-namespace WarehouseManagementSystem.Controllers
+namespace WarehouseManagementSystem.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class AuthController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class AuthController : ControllerBase
+    private readonly IAuthService _authService;
+
+    public AuthController(IAuthService userService)
     {
-        private readonly IAuthService _authService;
+        _authService = userService;
+    }
 
-        public AuthController(IAuthService userService)
+    [HttpPost("register")]
+    public async Task<ActionResult<AuthResponseDto>> Register([FromBody] RegisterRequest registerRequest)
+    {
+        Console.WriteLine($"Email: '{registerRequest?.Email}'");
+
+        var result = await _authService.CreateUserAsync(registerRequest);
+        if (result == null)
         {
-            _authService = userService;
+            return BadRequest("Registration failed.");
         }
+        return Ok(ApiResponse<AuthResponseDto>.SuccessResponse(result));
+    }
 
-        [HttpPost("register")]
-        public async Task<ActionResult<AuthResponseDto>> Register([FromBody] RegisterRequest registerRequest)
+    [HttpPost("login")]
+    public async Task<ActionResult<AuthResponseDto>> Login([FromBody] LoginRequest loginRequest)
+    {
+        var result = await _authService.LoginUserAsync(loginRequest);
+        if (result == null)
         {
-            Console.WriteLine($"Email: '{registerRequest?.Email}'");
-
-            var result = await _authService.CreateUserAsync(registerRequest);
-            if (result == null)
-            {
-                return BadRequest("Registration failed.");
-            }
-            return Ok(ApiResponse<AuthResponseDto>.SuccessResponse(result));
+            return Unauthorized("Invalid email or password.");
         }
+        return Ok(ApiResponse<AuthResponseDto>.SuccessResponse(result));
+    }
 
-        [HttpPost("login")]
-        public async Task<ActionResult<AuthResponseDto>> Login([FromBody] LoginRequest loginRequest)
+    [HttpPost("refresh")]
+    public async Task<ActionResult<ApiResponse<AuthResponseDto>>> Refresh([FromBody] RefreshTokenRequest refreshTokenRequest)
+    {
+        var result = await _authService.RefreshTokenAsync(refreshTokenRequest);
+        return Ok(ApiResponse<AuthResponseDto>.SuccessResponse(result, "Token refresh successfully"));
+    }
+
+    [HttpPost("revoke")]
+    public async Task<ActionResult> Revoke([FromBody] RefreshTokenRequest refreshTokenRequest)
+    {
+        await _authService.RevokeRefreshTokenAsync(refreshTokenRequest);
+        return Ok(ApiResponse<AuthResponseDto>.SuccessResponse("Token revoke successfully"));
+    }
+
+    [Authorize(Policy = "User")]
+    [HttpPut("me/profile")]
+    public async Task<ActionResult> UpdateMyProfile([FromBody] UpdateProfileRequest req)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(userId)) return Unauthorized();
+
+        var result = await _authService.ProfileUpdateAsync(userId, new Model.User
         {
-            var result = await _authService.LoginUserAsync(loginRequest);
-            if (result == null)
-            {
-                return Unauthorized("Invalid email or password.");
-            }
-            return Ok(ApiResponse<AuthResponseDto>.SuccessResponse(result));
-        }
+            FirstName = req.FirstName,
+            LastName = req.LastName,
+            Address = req.Address,
+            PhoneNumber = req.PhoneNumber
+        });
 
-        [HttpPost("refresh")]
-        public async Task<ActionResult<ApiResponse<AuthResponseDto>>> Refresh([FromBody] RefreshTokenRequest refreshTokenRequest)
-        {
-            var result = await _authService.RefreshTokenAsync(refreshTokenRequest);
-            return Ok(ApiResponse<AuthResponseDto>.SuccessResponse(result, "Token refresh successfully"));
-        }
-
-        [HttpPost("revoke")]
-        public async Task<ActionResult> Revoke([FromBody] RefreshTokenRequest refreshTokenRequest)
-        {
-            await _authService.RevokeRefreshTokenAsync(refreshTokenRequest);
-            return Ok(ApiResponse<AuthResponseDto>.SuccessResponse("Token revoke successfully"));
-        }
-
-        [Authorize(Policy = "User")]
-        [HttpPut("me/profile")]
-        public async Task<ActionResult> UpdateMyProfile([FromBody] UpdateProfileRequest req)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrWhiteSpace(userId)) return Unauthorized();
-
-            var result = await _authService.ProfileUpdateAsync(userId, new Model.User
-            {
-                FirstName = req.FirstName,
-                LastName = req.LastName,
-                Address = req.Address,
-                PhoneNumber = req.PhoneNumber
-            });
-
-            return Ok(ApiResponse<AuthResponseDto>.SuccessResponse(result, "Profile changed successfully"));
-        }
+        return Ok(ApiResponse<AuthResponseDto>.SuccessResponse(result, "Profile changed successfully"));
+    }
 
 
-        [HttpPut("me/change-password")]
-        public async Task<ActionResult> ChangeMyPassword([FromBody] ChangePasswordRequest req)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrWhiteSpace(userId)) return Unauthorized();
+    [HttpPut("me/change-password")]
+    public async Task<ActionResult> ChangeMyPassword([FromBody] ChangePasswordRequest req)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(userId)) return Unauthorized();
 
-            var result = await _authService.ChangePasswordAsync(userId, req.CurrentPassword, req.NewPassword);
+        var result = await _authService.ChangePasswordAsync(userId, req.CurrentPassword, req.NewPassword);
 
-            return Ok(ApiResponse<AuthResponseDto>.SuccessResponse(result, "Password changed successfully."));
-        }
+        return Ok(ApiResponse<AuthResponseDto>.SuccessResponse(result, "Password changed successfully."));
     }
 }

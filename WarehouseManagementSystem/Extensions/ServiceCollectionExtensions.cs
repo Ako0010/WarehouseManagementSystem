@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Text;
 using WarehouseManagementSystem.Config;
 using WarehouseManagementSystem.Data;
+using WarehouseManagementSystem.Mappings;
 using WarehouseManagementSystem.Model;
 using WarehouseManagementSystem.Service;
 using WarehouseManagementSystem.Service.Interface;
@@ -157,7 +158,6 @@ public static class ServiceCollectionExtensions
                 }
             );
 
-        // Authorization policies
         services.AddAuthorization(
             options =>
             {
@@ -208,9 +208,12 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddAutoMapperAndOtherServices(
         this IServiceCollection services)
     {
-        //services.AddAutoMapper(typeof(MappingProfile));
+        services.AddAutoMapper(typeof(MappingProfile));
 
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IProductService, ProductService>();
+        services.AddScoped<ISaleService, SaleService>();
+
 
 
         return services;

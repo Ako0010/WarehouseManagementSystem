@@ -11,6 +11,8 @@ public class Sale
     public int Quantity { get; set; }
 
     public decimal TotalPrice { get; set; }
+    
+    public string UserId { get; set; }
 
     public DateTime SaleDate { get; set; } = DateTime.UtcNow;
 }
