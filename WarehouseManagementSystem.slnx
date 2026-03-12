@@ -1,3 +1,6 @@
 <Solution>
-  <Project Path="WarehouseManagementSystem/WarehouseManagementSystem.csproj" Id="9d652531-9d11-4756-ba11-190aca9f3df4" />
+  <Project Path="WarehouseManagementSystem.Api/WarehouseManagementSystem.Api.csproj" Id="c761f15a-03f6-4105-a924-7817b7881b71" />
+  <Project Path="WarehouseManagementSystem.Application/WarehouseManagementSystem.Application.csproj" Id="1943c982-a889-4d92-a9f6-d0a5eaf0b92e" />
+  <Project Path="WarehouseManagementSystem.Domain/WarehouseManagementSystem.Domain.csproj" Id="47501a41-a2fa-4d73-bc8d-739384ca443f" />
+  <Project Path="WarehouseManagementSystem.Infrastructure/WarehouseManagementSystem.Infrastructure.csproj" Id="3d6cac82-02fe-45e1-b0bd-7c044dec3485" />
 </Solution>
