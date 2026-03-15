@@ -24,6 +24,8 @@ public class ProductService : IProductService
     {
         var product = _mapper.Map<Product>(productCreateDto);
 
+        product.CreatedAt = DateTime.UtcNow;
+
         _context.Products.Add(product);
 
         await _context.SaveChangesAsync();
@@ -47,6 +49,7 @@ public class ProductService : IProductService
     public async Task<List<ProductDto>> GetAllProductsAsync()
     {
         var products = await _context.Products
+                             .Include(p => p.Category)
                              .AsNoTracking()
                              .ToListAsync();
 
@@ -55,7 +58,9 @@ public class ProductService : IProductService
 
     public async Task<ProductDto> GetProductByIdAsync(int id)
     {
-        var product = await _context.Products.FindAsync(id);
+        var product = await _context.Products
+                            .Include(p => p.Category)
+                            .FirstOrDefaultAsync(p => p.Id == id);
 
         if (product is null)
             return null;

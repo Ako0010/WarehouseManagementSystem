@@ -12,24 +12,15 @@ public class MappingProfile : Profile
            .ForMember(dest => dest.Id, opt => opt.Ignore())
            .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
            .ForMember(dest => dest.Category, opt => opt.Ignore())
-           .ForMember(dest => dest.Name, opt => opt.Ignore())
-           .ForMember(dest => dest.Quantity, opt => opt.Ignore())
-           .ForMember(dest => dest.Price, opt => opt.Ignore())
            .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.CategoryId));
 
         CreateMap<ProductUpdateDto, Product>()
             .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
             .ForMember(dest => dest.Category, opt => opt.Ignore())
-            .ForMember(dest => dest.Name, opt => opt.Ignore())
-            .ForMember(dest => dest.Quantity, opt => opt.Ignore())
-            .ForMember(dest => dest.Price, opt => opt.Ignore())
             .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.CategoryId));
 
         CreateMap<Product, ProductDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
-            .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Quantity))
-            .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
              .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
             .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category != null ? src.Category.Name : null));
 
@@ -41,6 +32,10 @@ public class MappingProfile : Profile
 
         CreateMap<Sale, SaleDto>()
             .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name));
+
+        CreateMap<CategoryCreateDto, Category>();
+
+        CreateMap<Category, CategoryDto>();
 
     }
 }
