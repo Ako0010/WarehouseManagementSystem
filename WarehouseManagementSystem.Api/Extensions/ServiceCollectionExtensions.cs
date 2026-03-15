@@ -213,6 +213,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IProductService, ProductService>();
         services.AddScoped<ISaleService, SaleService>();
+        services.AddScoped<ICategoryService, CategoryService>();
 
 
 
