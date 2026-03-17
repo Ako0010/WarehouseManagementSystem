@@ -57,7 +57,7 @@ public class AuthController : ControllerBase
         return Ok(ApiResponse<AuthResponseDto>.SuccessResponse("Token revoke successfully"));
     }
 
-    [Authorize(Policy = "User")]
+    [Authorize(Policy = "UserOnly")]
     [HttpPut("me/profile")]
     public async Task<ActionResult> UpdateMyProfile([FromBody] UpdateProfileRequest req)
     {

@@ -26,6 +26,8 @@ public class ProductService : IProductService
 
         product.CreatedAt = DateTime.UtcNow;
 
+        UpdateProductStatus(product);
+
         _context.Products.Add(product);
 
         await _context.SaveChangesAsync();
@@ -80,10 +82,7 @@ public class ProductService : IProductService
 
         product.Quantity -= quantity;
 
-        if (product.Quantity <= 0)
-        {
-            product.Status = ProductStatus.OutOfStock;
-        }
+        UpdateProductStatus(product);
 
         await _context.SaveChangesAsync();
 
@@ -99,8 +98,22 @@ public class ProductService : IProductService
 
         _mapper.Map(productUpdateDto,product);
 
+        UpdateProductStatus(product);
+
         await _context.SaveChangesAsync();
 
         return _mapper.Map<ProductDto>(product);
+    }
+
+    private void UpdateProductStatus(Product product)
+    {
+        if (product.Quantity == 0)
+            product.Status = ProductStatus.OutOfStock;
+
+        else if (product.Quantity <= product.StockLimit)
+            product.Status = ProductStatus.LowStock;
+
+        else
+            product.Status = ProductStatus.Active;
     }
 }

@@ -18,7 +18,7 @@ public class SaleService : ISaleService
         _mapper = mapper;
     }
 
-    public async Task<SaleDto> CreateSaleAsync(SaleCreateDto saleCreateDto)
+    public async Task<SaleDto> CreateSaleAsync(SaleCreateDto saleCreateDto, string userId)
     {
         var product = await _context.Products.FindAsync(saleCreateDto.ProductId);
 
@@ -32,6 +32,7 @@ public class SaleService : ISaleService
 
         var sale = _mapper.Map<Sale>(saleCreateDto);
 
+        sale.UserId = userId;
         sale.TotalPrice = product.Price * saleCreateDto.Quantity;
         sale.SaleDate = DateTime.UtcNow;
 

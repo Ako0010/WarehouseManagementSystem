@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using WarehouseManagementSystem.Domain.Common;
 using WarehouseManagementSystem.Application.DTOs;
 using WarehouseManagementSystem.Application.Interface;
+using WarehouseManagementSystem.Domain.Common;
 
 namespace WarehouseManagementSystem.Controllers;
 
@@ -31,6 +32,18 @@ public class ProductController : ControllerBase
         return Ok(ApiResponse<ProductDto>.SuccessResponse(product,"Product returned successfully"));
     }
 
+    [HttpPost("reduce-stock")]
+    public async Task<ActionResult> ReduceStock(int productId, int quantity)
+    {
+        var result = await _productService.ReduceStockAsync(productId, quantity);
+
+        if (!result)
+            return NotFound();
+
+        return Ok(ApiResponse<ProductDto>.SuccessResponse("Product stock updated successfully"));
+    }
+
+    [Authorize(Policy = "AdminOnly")]
     [HttpPost]
     public async Task<ActionResult> Create([FromBody] ProductCreateDto productCreateDto)
     {
@@ -41,6 +54,7 @@ public class ProductController : ControllerBase
             ApiResponse<ProductDto>.SuccessResponse(createdProduct, "Product created successfully"));
     }
 
+    [Authorize(Policy = "AdminOnly")]
     [HttpPut]
     public async Task<ActionResult> Update(int id, [FromBody] ProductUpdateDto productUpdateDto)
     {
@@ -49,6 +63,7 @@ public class ProductController : ControllerBase
 
     }
 
+    [Authorize(Policy = "AdminOnly")]
     [HttpDelete]
     public async Task<ActionResult> Delete(int id)
     {
@@ -58,16 +73,5 @@ public class ProductController : ControllerBase
             return NotFound();
 
         return Ok(result);
-    }
-
-    [HttpPost("reduce-stock")]
-    public async Task<ActionResult> ReduceStock (int productId,int quantity)
-    {
-        var result = await _productService.ReduceStockAsync(productId, quantity);
-
-        if (!result)
-            return NotFound();
-
-        return Ok(ApiResponse<ProductDto>.SuccessResponse("Product stock updated successfully"));
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WarehouseManagementSystem.Application.DTOs;
 using WarehouseManagementSystem.Application.Interface;
@@ -16,6 +17,7 @@ public class CategoryController : ControllerBase
         _categoryService = categoryService;
     }
 
+    [Authorize(Policy = "AdminOnly")]
     [HttpPost]
     public async Task<IActionResult> CreateCategory(CategoryCreateDto dto)
     {

@@ -4,7 +4,7 @@ namespace WarehouseManagementSystem.Application.Interface;
 
 public interface ISaleService
 {
-    Task<SaleDto> CreateSaleAsync(SaleCreateDto saleCreateDto);
+    Task<SaleDto> CreateSaleAsync(SaleCreateDto saleCreateDto, string userId);
 
     Task<List<SaleDto>> GetAllSalesAsync();
 
