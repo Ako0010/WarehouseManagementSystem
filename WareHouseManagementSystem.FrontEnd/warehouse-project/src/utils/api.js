@@ -3,12 +3,41 @@ import { useTokens } from "../stores/tokenStore.js";
 
 
 const api = axios.create({
-    baseURL: '',
+    baseURL: 'http://localhost:5079/',
     timeout: 10000,
     headers: {
         'Content-Type': 'application/json',
     }
 })
+
+const refreshTokens = async () => {
+  const {
+    refreshToken,
+    accessToken,
+    setAccessToken,
+    setRefreshToken,
+  } = useTokens.getState();
+
+  if (!refreshToken) throw new Error("No refresh token");
+
+  const res = await axios.post(
+    "http://localhost:5079/api/Auth/refresh",
+    { refreshToken },
+    
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  const data = res.data.data || res.data;
+
+  setAccessToken(data.accessToken);
+  setRefreshToken(data.refreshToken);
+
+  return data.accessToken;
+};
 
 api.interceptors.request.use(
     (config) => {

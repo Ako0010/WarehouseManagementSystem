@@ -38,4 +38,17 @@ public class CategoryService : ICategoryService
 
         return _mapper.Map<List<CategoryDto>>(categories);
     }
+
+    public async Task<bool> DeleteCategoriesAsync(int id) 
+    {
+        var category = await _context.Categories.FindAsync(id);
+
+        if (category is null)
+            return false;
+
+        _context.Categories.Remove(category);
+        await _context.SaveChangesAsync();
+        return true;
+
+    }
 }

@@ -8,12 +8,13 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Text;
-using WarehouseManagementSystem.Config;
-using WarehouseManagementSystem.Infrastructure.Data;
-using WarehouseManagementSystem.Application.Mappings;
-using WarehouseManagementSystem.Domain.Model;
 using WarehouseManagementSystem.Application.Interface;
+using WarehouseManagementSystem.Application.Mappings;
+using WarehouseManagementSystem.Config;
+using WarehouseManagementSystem.Domain.Model;
+using WarehouseManagementSystem.Infrastructure.Data;
 using WarehouseManagementSystem.Infrastructure.Service;
+using WarehouseManagementSystem.Validator;
 
 namespace WarehouseManagementSystem.Extensions;
 
@@ -171,6 +172,11 @@ public static class ServiceCollectionExtensions
                     policy
                         => policy.RequireRole("User"));
 
+                options.AddPolicy(
+                    "AdminOrUser",
+                    policy
+                        => policy.RequireRole("Admin", "User"));
+
             });
 
         return services;
@@ -185,8 +191,8 @@ public static class ServiceCollectionExtensions
     {
         optons.AddDefaultPolicy(
             policy => policy.WithOrigins(
-                "http://localhost:3000",
-                "http://127.0.0.1:3000")
+                "http://localhost:5173",
+                "http://127.0.0.1:5173")
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials()
@@ -201,7 +207,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddFluentValidationAutoValidation();
         services.AddFluentValidationClientsideAdapters();
-        services.AddValidatorsFromAssemblyContaining<Program>();
+        services.AddValidatorsFromAssemblyContaining<ProductCreateValidator>();
         return services;
     }
 
@@ -212,8 +218,9 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IProductService, ProductService>();
-        services.AddScoped<ISaleService, SaleService>();
+        services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<IUserService, UserService>();
 
 
 

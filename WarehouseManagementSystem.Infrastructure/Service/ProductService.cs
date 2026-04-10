@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WarehouseManagementSystem.Infrastructure.Data;
 using WarehouseManagementSystem.Application.DTOs;
@@ -30,6 +29,16 @@ public class ProductService : IProductService
 
         _context.Products.Add(product);
 
+        _context.StockMovements.Add(new StockMovement
+        {
+            Product = product,
+            Quantity = product.Quantity,
+            Type = "Add",
+            FromLocationId = null,
+            ToLocationId = product.LocationId,
+            Date = DateTime.UtcNow
+        });
+
         await _context.SaveChangesAsync();
 
         return _mapper.Map<ProductDto>(product);
@@ -52,6 +61,7 @@ public class ProductService : IProductService
     {
         var products = await _context.Products
                              .Include(p => p.Category)
+                             .Include(p => p.Location)
                              .AsNoTracking()
                              .ToListAsync();
 
@@ -62,6 +72,7 @@ public class ProductService : IProductService
     {
         var product = await _context.Products
                             .Include(p => p.Category)
+                            .Include(p => p.Location)
                             .FirstOrDefaultAsync(p => p.Id == id);
 
         if (product is null)
@@ -84,6 +95,16 @@ public class ProductService : IProductService
 
         UpdateProductStatus(product);
 
+        _context.StockMovements.Add(new StockMovement
+        {
+            Product = product,
+            Quantity = -quantity,
+            Type = "Sale",
+            FromLocationId = product.LocationId,
+            ToLocationId = null,
+            Date = DateTime.UtcNow
+        });
+
         await _context.SaveChangesAsync();
 
         return true;
@@ -91,10 +112,17 @@ public class ProductService : IProductService
 
     public async Task<ProductDto> UpdateProductAsync(int productId, ProductUpdateDto productUpdateDto)
     {
-        var product = await _context.Products.FindAsync(productId,productUpdateDto);
+        var product = await _context.Products.FindAsync(productId);
 
         if (product is null)
             return null;
+
+        var categoryExists = await _context.Categories
+            .AnyAsync(c => c.Id == productUpdateDto.CategoryId);
+
+        if (!categoryExists)
+            throw new Exception("Category not found");
+
 
         _mapper.Map(productUpdateDto,product);
 

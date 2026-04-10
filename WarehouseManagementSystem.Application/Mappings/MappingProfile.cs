@@ -12,30 +12,27 @@ public class MappingProfile : Profile
            .ForMember(dest => dest.Id, opt => opt.Ignore())
            .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
            .ForMember(dest => dest.Category, opt => opt.Ignore())
-           .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.CategoryId));
+           .ForMember(dest => dest.Location, opt => opt.Ignore());
+
 
         CreateMap<ProductUpdateDto, Product>()
             .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
             .ForMember(dest => dest.Category, opt => opt.Ignore())
-            .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.CategoryId));
+            .ForMember(dest => dest.Location, opt => opt.Ignore());
 
         CreateMap<Product, ProductDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
-            .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category != null ? src.Category.Name : null));
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
+            .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category != null ? src.Category.Name : null))
+            .ForMember(dest => dest.LocationCode, opt => opt.MapFrom(src => src.Location.Code))
+            .ForMember(dest => dest.StockLimit, opt => opt.MapFrom(src => src.StockLimit))
+            .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description));
 
-        CreateMap<SaleCreateDto, Sale>()
-            .ForMember(dest => dest.Id, opt => opt.Ignore())
-            .ForMember(dest => dest.Product, opt => opt.Ignore())
-            .ForMember(dest => dest.TotalPrice, opt => opt.Ignore())
-            .ForMember(dest => dest.SaleDate, opt => opt.Ignore());
-
-        CreateMap<Sale, SaleDto>()
-            .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name));
 
         CreateMap<CategoryCreateDto, Category>();
 
         CreateMap<Category, CategoryDto>();
+
 
     }
 }

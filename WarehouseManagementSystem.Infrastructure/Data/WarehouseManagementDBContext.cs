@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
 using WarehouseManagementSystem.Domain.Model;
 
 namespace WarehouseManagementSystem.Infrastructure.Data;
@@ -12,9 +11,14 @@ public class WarehouseManagementDBContext : IdentityDbContext<User>
     {}
 
     public DbSet<Product> Products => Set<Product>();
-    public DbSet<Sale> Sales => Set<Sale>();
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<Location> Locations => Set<Location>();
+    public DbSet<StockMovement> StockMovements => Set<StockMovement>();
+    public DbSet<Transfer> Transfers => Set<Transfer>();
+    public DbSet<Order> Orders => Set<Order>();
+    
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -35,19 +39,59 @@ public class WarehouseManagementDBContext : IdentityDbContext<User>
                    .WithMany(c => c.Products)
                    .HasForeignKey(p => p.CategoryId)
                    .OnDelete(DeleteBehavior.Cascade);
+
+            product.HasOne(p => p.Location)
+                   .WithMany(l => l.Products)
+                   .HasForeignKey(p => p.LocationId)
+                   .OnDelete(DeleteBehavior.Restrict);
         });
 
-        modelBuilder.Entity<Sale>(sale =>
+        modelBuilder.Entity<Order>(order =>
         {
-            sale.HasKey(s => s.Id);
+            order.HasKey(p => p.Id);
 
-            sale.Property(s => s.TotalPrice)
-                .HasColumnType("decimal(18,2)");
+            order.Property(p => p.CustomerName)
+                   .IsRequired()
+                   .HasMaxLength(100);
 
-            sale.HasOne(s => s.Product)
-                .WithMany()
-                .HasForeignKey(s => s.ProductId)
-                .OnDelete(DeleteBehavior.Cascade);
+            order.Property(p => p.Quantity)
+                   .IsRequired();
+
+            order.HasOne(o => o.Product)
+                    .WithMany()
+                    .HasForeignKey(o => o.ProductId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+            order.Property(o => o.UserId)
+                    .IsRequired();
+
+
+        });
+
+        modelBuilder.Entity<StockMovement> (stockMovement =>
+         {
+           stockMovement.HasOne(s => s.Product)
+             .WithMany()
+             .HasForeignKey(s => s.ProductId)
+             .OnDelete(DeleteBehavior.Cascade);
+         });
+
+        modelBuilder.Entity<Transfer>(transfer =>
+        {
+            transfer.HasOne(t => t.Product)
+                    .WithMany()
+                    .HasForeignKey(t => t.ProductId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+            transfer.HasOne(t => t.FromLocation)
+                    .WithMany()
+                    .HasForeignKey(t => t.FromLocationId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+            transfer.HasOne(t => t.ToLocation)
+                    .WithMany()
+                    .HasForeignKey(t => t.ToLocationId)
+                    .OnDelete(DeleteBehavior.Restrict);
         });
 
 

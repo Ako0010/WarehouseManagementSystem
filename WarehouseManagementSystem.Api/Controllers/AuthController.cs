@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using WarehouseManagementSystem.Domain.Common;
 using WarehouseManagementSystem.Application.DTOs;
 using WarehouseManagementSystem.Application.Interface;
+using WarehouseManagementSystem.Domain.Common;
+using WarehouseManagementSystem.Domain.Model;
 
 namespace WarehouseManagementSystem.Controllers;
 
@@ -13,10 +15,12 @@ namespace WarehouseManagementSystem.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
+    private readonly UserManager<User> _userManager;
 
-    public AuthController(IAuthService userService)
+    public AuthController(IAuthService userService,UserManager<User> userManager)
     {
         _authService = userService;
+        _userManager = userManager;
     }
 
     [HttpPost("register")]
@@ -40,6 +44,7 @@ public class AuthController : ControllerBase
         {
             return Unauthorized("Invalid email or password.");
         }
+
         return Ok(ApiResponse<AuthResponseDto>.SuccessResponse(result));
     }
 

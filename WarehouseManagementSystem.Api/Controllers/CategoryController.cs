@@ -18,7 +18,7 @@ public class CategoryController : ControllerBase
     }
 
     [Authorize(Policy = "AdminOnly")]
-    [HttpPost]
+    [HttpPost("add")]
     public async Task<IActionResult> CreateCategory(CategoryCreateDto dto)
     {
         var result = await _categoryService.CreateCategoryAsync(dto);
@@ -26,10 +26,21 @@ public class CategoryController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet]
+    [HttpGet("get-all")]
     public async Task<IActionResult> GetAllCategories()
     {
         var result = await _categoryService.GetAllCategoriesAsync();
+
+        return Ok(result);
+    }
+
+    [HttpDelete("delete/{id}")]
+    public async Task<ActionResult> DeleteCategory(int id)
+    {
+        var result = await _categoryService.DeleteCategoriesAsync(id);
+
+        if (!result)
+            return BadRequest();
 
         return Ok(result);
     }

@@ -93,6 +93,10 @@ public class AuthService : IAuthService
         if (!await _userManager.CheckPasswordAsync(user, loginRequest.Password))
             throw new UnauthorizedAccessException("Invalid email or password.");
 
+        user.IsOnline = true;
+        user.LastSeen = DateTime.UtcNow;
+        await _userManager.UpdateAsync(user);
+
         return await GenerateTokensAsync(user);
     }
 

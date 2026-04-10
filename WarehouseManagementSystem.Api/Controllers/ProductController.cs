@@ -44,9 +44,12 @@ public class ProductController : ControllerBase
     }
 
     [Authorize(Policy = "AdminOnly")]
-    [HttpPost]
+    [HttpPost("add")]
     public async Task<ActionResult> Create([FromBody] ProductCreateDto productCreateDto)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
         var createdProduct = await _productService.AddProductAsync(productCreateDto);
         return CreatedAtAction(
             nameof(GetById),
@@ -55,16 +58,19 @@ public class ProductController : ControllerBase
     }
 
     [Authorize(Policy = "AdminOnly")]
-    [HttpPut]
+    [HttpPut("update/{id}")]
     public async Task<ActionResult> Update(int id, [FromBody] ProductUpdateDto productUpdateDto)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
         var updatedProduct = await _productService.UpdateProductAsync(id,productUpdateDto);
         return Ok(ApiResponse<ProductDto>.SuccessResponse(updatedProduct, "Product Updated successfully"));
 
     }
 
     [Authorize(Policy = "AdminOnly")]
-    [HttpDelete]
+    [HttpDelete("delete/{id}")]
     public async Task<ActionResult> Delete(int id)
     {
         var result = await _productService.DeleteProductAsync(id);
