@@ -24,10 +24,6 @@ const Orders = () => {
     load();
   };
 
-  const cancel = async (id) => {
-    await api.post(`/api/order/cancel/${id}`);
-    load();
-  };
 
  return (
   <div className="page-wrapper">
@@ -91,16 +87,7 @@ const Orders = () => {
                       )}
                     </td>
 
-                    <td>
-                      {o.status === "Pending" && (
-                        <button
-                          className="btn btn-danger btn-sm"
-                          onClick={() => cancel(o.id)}
-                        >
-                          Cancel
-                        </button>
-                      )}
-                    </td>
+                   
                   </tr>
                 );
               })}
