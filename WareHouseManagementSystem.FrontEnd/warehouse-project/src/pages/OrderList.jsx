@@ -92,7 +92,7 @@ const Orders = () => {
                     </td>
 
                     <td>
-                      {o.status === "Processing" && (
+                      {o.status === "Pending" && (
                         <button
                           className="btn btn-danger btn-sm"
                           onClick={() => cancel(o.id)}
